@@ -2,10 +2,14 @@ import { NavLink } from 'react-router-dom';
 import { FaShieldAlt, FaTachometerAlt, FaUsers, FaChartBar, FaSignOutAlt, FaExclamationTriangle, FaMapMarkedAlt } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useApprovalRequests } from '../hooks/useFirestore';
 
 export default function Sidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { requests: approvalRequests } = useApprovalRequests();
+
+  const pendingCount = approvalRequests.filter((r) => r.status === 'pending').length;
 
   const handleLogout = () => {
     logout();
@@ -13,11 +17,11 @@ export default function Sidebar() {
   };
 
   const navItems = [
-    { to: '/dashboard', icon: <FaTachometerAlt />, label: 'Dashboard' },
-    { to: '/users', icon: <FaUsers />, label: 'Users' },
-    { to: '/analytics', icon: <FaChartBar />, label: 'Analytics' },
-    { to: '/sos-alerts', icon: <FaExclamationTriangle />, label: 'SOS Alerts' },
-    { to: '/danger-zones', icon: <FaMapMarkedAlt />, label: 'Danger Zones' },
+    { to: '/dashboard', icon: <FaTachometerAlt />, label: 'Dashboard', badge: 0 },
+    { to: '/users', icon: <FaUsers />, label: 'Users', badge: pendingCount },
+    { to: '/analytics', icon: <FaChartBar />, label: 'Analytics', badge: 0 },
+    { to: '/sos-alerts', icon: <FaExclamationTriangle />, label: 'SOS Alerts', badge: 0 },
+    { to: '/danger-zones', icon: <FaMapMarkedAlt />, label: 'Danger Zones', badge: 0 },
   ];
 
   return (
@@ -40,6 +44,9 @@ export default function Sidebar() {
           >
             <span style={styles.navIcon}>{item.icon}</span>
             {item.label}
+            {item.badge > 0 && (
+              <span style={styles.navBadge}>{item.badge}</span>
+            )}
           </NavLink>
         ))}
       </nav>
@@ -96,6 +103,15 @@ const styles: Record<string, React.CSSProperties> = {
   },
   navIcon: {
     fontSize: '16px',
+  },
+  navBadge: {
+    marginLeft: 'auto',
+    background: '#FEF3C7',
+    color: '#D97706',
+    fontSize: '11px',
+    fontWeight: '700',
+    padding: '2px 8px',
+    borderRadius: '10px',
   },
   logoutButton: {
     display: 'flex',

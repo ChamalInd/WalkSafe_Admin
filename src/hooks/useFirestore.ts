@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy, limit, doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export interface UserData {
@@ -7,6 +7,7 @@ export interface UserData {
   uid: string;
   email: string;
   displayName: string;
+  phone?: string;
   createdAt: unknown;
   rating: number;
   totalRatings: number;
@@ -18,6 +19,7 @@ export interface LiveUser {
   uid: string;
   displayName: string;
   email: string;
+  isOnline: boolean;
   latitude: number;
   longitude: number;
   onJourney: boolean;
@@ -76,6 +78,16 @@ export interface Feedback {
   createdAt: number;
 }
 
+export interface ApprovalRequest {
+  id: string;
+  uid: string;
+  displayName: string;
+  email: string;
+  phone: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: number;
+}
+
 export function useUsers() {
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,20 +107,62 @@ export function useUsers() {
   return { users, loading };
 }
 
+export function useApprovalRequests() {
+  const [requests, setRequests] = useState<ApprovalRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'approval_requests'), (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as ApprovalRequest[];
+      setRequests(data);
+      setLoading(false);
+    }, () => {
+      setRequests([]);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const approveUser = async (uid: string) => {
+    const reqDoc = await getDoc(doc(db, 'approval_requests', uid));
+    const reqData = reqDoc.data();
+    await updateDoc(doc(db, 'approval_requests', uid), { status: 'approved' });
+    if (reqData) {
+      const userDoc = await getDoc(doc(db, 'users', uid));
+      if (userDoc.exists()) {
+        await setDoc(doc(db, 'users', uid), { phone: reqData.phone }, { merge: true });
+      }
+    }
+  };
+
+  const rejectUser = async (uid: string) => {
+    await updateDoc(doc(db, 'approval_requests', uid), { status: 'rejected' });
+  };
+
+  return { requests, loading, approveUser, rejectUser };
+}
+
 export function useLiveUsers() {
   const [liveUsers, setLiveUsers] = useState<LiveUser[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'live_users'), (snapshot) => {
+      const now = Date.now();
+      const staleThreshold = 300000;
       const allDocs = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as LiveUser[];
       const uniqueByUid = new Map<string, LiveUser>();
       allDocs.forEach((user) => {
-        if (!uniqueByUid.has(user.uid)) {
-          uniqueByUid.set(user.uid, user);
+        if (user.isOnline && user.lastUpdate && (now - user.lastUpdate) < staleThreshold) {
+          if (!uniqueByUid.has(user.uid)) {
+            uniqueByUid.set(user.uid, user);
+          }
         }
       });
       setLiveUsers(Array.from(uniqueByUid.values()));

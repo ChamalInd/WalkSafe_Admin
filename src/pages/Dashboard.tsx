@@ -1,5 +1,6 @@
 import { FaUsers, FaShieldAlt, FaRoute, FaExclamationTriangle, FaSpinner } from 'react-icons/fa';
 import { useUsers, useLiveUsers, useJourneyRequests, useDangerZones, useSosAlerts } from '../hooks/useFirestore';
+import LiveMap from '../components/LiveMap';
 
 export default function Dashboard() {
   const { users, loading: usersLoading } = useUsers();
@@ -73,6 +74,8 @@ export default function Dashboard() {
           <span style={styles.miniValue}>{zones.reduce((sum, z) => sum + z.reports, 0)}</span>
         </div>
       </div>
+
+      <LiveMap />
 
       <div style={styles.bottomGrid}>
         <div style={styles.activityCard}>
