@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { FaShieldAlt, FaTachometerAlt, FaUsers, FaChartBar, FaCog, FaSignOutAlt, FaExclamationTriangle, FaMapMarkedAlt } from 'react-icons/fa';
+import { FaShieldAlt, FaTachometerAlt, FaUsers, FaChartBar, FaSignOutAlt, FaExclamationTriangle, FaMapMarkedAlt } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,6 @@ export default function Sidebar() {
     { to: '/analytics', icon: <FaChartBar />, label: 'Analytics' },
     { to: '/sos-alerts', icon: <FaExclamationTriangle />, label: 'SOS Alerts' },
     { to: '/danger-zones', icon: <FaMapMarkedAlt />, label: 'Danger Zones' },
-    { to: '/settings', icon: <FaCog />, label: 'Settings' },
   ];
 
   return (

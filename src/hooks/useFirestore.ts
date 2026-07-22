@@ -101,11 +101,17 @@ export function useLiveUsers() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'live_users'), (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
+      const allDocs = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as LiveUser[];
-      setLiveUsers(data);
+      const uniqueByUid = new Map<string, LiveUser>();
+      allDocs.forEach((user) => {
+        if (!uniqueByUid.has(user.uid)) {
+          uniqueByUid.set(user.uid, user);
+        }
+      });
+      setLiveUsers(Array.from(uniqueByUid.values()));
       setLoading(false);
     });
     return () => unsubscribe();

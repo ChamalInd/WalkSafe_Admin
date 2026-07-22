@@ -8,7 +8,7 @@ export default function SosAlerts() {
     return (
       <div style={styles.loadingContainer}>
         <FaSpinner style={styles.spinner} />
-        <p style={styles.loadingText}>Loading SOS alerts...</p>
+        <p style={styles.loadingText}>Connecting to real-time alerts...</p>
       </div>
     );
   }
@@ -19,6 +19,10 @@ export default function SosAlerts() {
         <div style={styles.alertCount}>
           <span style={styles.alertNumber}>{alerts.length}</span>
           <span style={styles.alertLabel}>Total SOS Alerts</span>
+          <span style={styles.liveTag}>
+            <span style={styles.liveDot} />
+            LIVE
+          </span>
         </div>
       </div>
 
@@ -73,6 +77,7 @@ const styles: Record<string, React.CSSProperties> = {
   spinner: {
     fontSize: '40px',
     color: '#DC2626',
+    animation: 'spin 1s linear infinite',
   },
   loadingText: {
     color: '#6B7280',
@@ -94,6 +99,27 @@ const styles: Record<string, React.CSSProperties> = {
   alertLabel: {
     fontSize: '14px',
     color: '#6B7280',
+  },
+  liveTag: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    background: '#FEF2F2',
+    border: '1px solid #FCA5A5',
+    borderRadius: '12px',
+    padding: '3px 8px',
+    fontSize: '10px',
+    fontWeight: '700',
+    color: '#DC2626',
+    letterSpacing: '0.5px',
+  },
+  liveDot: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    background: '#DC2626',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
   },
   alertsList: {
     display: 'flex',

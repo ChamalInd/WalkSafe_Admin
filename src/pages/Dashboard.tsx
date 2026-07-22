@@ -18,10 +18,10 @@ export default function Dashboard() {
   const highDangerZones = zones.filter((z) => z.level === 'high' || z.level === 'risky').length;
 
   const stats = [
-    { title: 'Total Users', value: users.length.toString(), icon: <FaUsers />, color: '#4F46E5' },
-    { title: 'Online Now', value: onlineUsers.toString(), icon: <FaShieldAlt />, color: '#059669' },
-    { title: 'Active Journeys', value: activeJourneys.toString(), icon: <FaRoute />, color: '#D97706' },
-    { title: 'SOS Alerts', value: activeAlerts.toString(), icon: <FaExclamationTriangle />, color: '#DC2626' },
+    { title: 'Total Users', value: users.length.toString(), icon: <FaUsers />, color: '#4F46E5', live: false },
+    { title: 'Online Now', value: onlineUsers.toString(), icon: <FaShieldAlt />, color: '#059669', live: true },
+    { title: 'Active Journeys', value: activeJourneys.toString(), icon: <FaRoute />, color: '#D97706', live: true },
+    { title: 'SOS Alerts', value: activeAlerts.toString(), icon: <FaExclamationTriangle />, color: '#DC2626', live: true },
   ];
 
   const recentJourneys = requests.slice(0, 8);
@@ -31,7 +31,7 @@ export default function Dashboard() {
     return (
       <div style={styles.loadingContainer}>
         <FaSpinner style={styles.spinner} />
-        <p style={styles.loadingText}>Loading real-time data...</p>
+        <p style={styles.loadingText}>Connecting to real-time data...</p>
       </div>
     );
   }
@@ -46,7 +46,10 @@ export default function Dashboard() {
             </div>
             <div style={styles.statInfo}>
               <p style={styles.statTitle}>{stat.title}</p>
-              <p style={styles.statValue}>{stat.value}</p>
+              <div style={styles.statValueRow}>
+                <p style={styles.statValue}>{stat.value}</p>
+                {stat.live && <span style={styles.livePulse} />}
+              </div>
             </div>
           </div>
         ))}
@@ -73,7 +76,13 @@ export default function Dashboard() {
 
       <div style={styles.bottomGrid}>
         <div style={styles.activityCard}>
-          <h3 style={styles.cardTitle}>Recent Journeys (Real-time)</h3>
+          <div style={styles.cardTitleRow}>
+            <h3 style={styles.cardTitle}>Recent Journeys</h3>
+            <span style={styles.liveTag}>
+              <span style={styles.liveDotSmall} />
+              LIVE
+            </span>
+          </div>
           <div style={styles.activityList}>
             {recentJourneys.length === 0 ? (
               <p style={styles.emptyText}>No journey requests yet</p>
@@ -104,14 +113,20 @@ export default function Dashboard() {
         </div>
 
         <div style={styles.alertCard}>
-          <h3 style={styles.cardTitle}>SOS Alerts (Real-time)</h3>
+          <div style={styles.cardTitleRow}>
+            <h3 style={styles.cardTitle}>SOS Alerts</h3>
+            <span style={{ ...styles.liveTag, background: '#FEF2F2', color: '#DC2626', borderColor: '#FCA5A5' }}>
+              <span style={{ ...styles.liveDotSmall, background: '#DC2626' }} />
+              LIVE
+            </span>
+          </div>
           <div style={styles.activityList}>
             {recentAlerts.length === 0 ? (
               <p style={styles.emptyText}>No active SOS alerts</p>
             ) : (
               recentAlerts.map((alert) => (
                 <div key={alert.id} style={styles.alertItem}>
-                  <div style={{ ...styles.activityDot, background: '#DC2626' }} />
+                  <div style={{ ...styles.activityDot, background: '#DC2626', animation: 'pulse 1.5s ease-in-out infinite' }} />
                   <div style={styles.activityInfo}>
                     <p style={styles.activityUser}>{alert.displayName}</p>
                     <p style={styles.activityAction}>{alert.message}</p>
@@ -182,11 +197,24 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#6B7280',
     margin: '0 0 4px',
   },
+  statValueRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
   statValue: {
     fontSize: '28px',
     fontWeight: '700',
     color: '#1F2937',
     margin: 0,
+  },
+  livePulse: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
   },
   secondaryStats: {
     display: 'grid',
@@ -230,11 +258,38 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
     borderLeft: '4px solid #DC2626',
   },
+  cardTitleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '20px',
+  },
   cardTitle: {
     fontSize: '16px',
     fontWeight: '600',
     color: '#1F2937',
-    margin: '0 0 20px',
+    margin: 0,
+  },
+  liveTag: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    background: '#ECFDF5',
+    border: '1px solid #059669',
+    borderRadius: '12px',
+    padding: '3px 8px',
+    fontSize: '10px',
+    fontWeight: '700',
+    color: '#059669',
+    letterSpacing: '0.5px',
+  },
+  liveDotSmall: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
   },
   activityList: {
     display: 'flex',

@@ -6,7 +6,6 @@ import UserManagement from './pages/UserManagement';
 import Analytics from './pages/Analytics';
 import SosAlerts from './pages/SosAlerts';
 import DangerZones from './pages/DangerZones';
-import Settings from './pages/Settings';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import './index.css';
@@ -83,16 +82,6 @@ function AppRoutes() {
           <ProtectedRoute>
             <AdminLayout title="Danger Zones">
               <DangerZones />
-            </AdminLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <AdminLayout title="Settings">
-              <Settings />
             </AdminLayout>
           </ProtectedRoute>
         }

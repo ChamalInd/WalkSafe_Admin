@@ -8,7 +8,7 @@ export default function DangerZones() {
     return (
       <div style={styles.loadingContainer}>
         <FaSpinner style={styles.spinner} />
-        <p style={styles.loadingText}>Loading danger zones...</p>
+        <p style={styles.loadingText}>Connecting to real-time danger zones...</p>
       </div>
     );
   }
@@ -57,6 +57,10 @@ export default function DangerZones() {
         <div style={styles.summaryItem}>
           <span style={{ ...styles.summaryValue, color: '#059669' }}>{totalSafeVotes}</span>
           <span style={styles.summaryLabel}>Safe Votes</span>
+        </div>
+        <div style={styles.liveIndicator}>
+          <span style={styles.liveDot} />
+          <span style={styles.liveText}>LIVE</span>
         </div>
       </div>
 
@@ -123,6 +127,7 @@ const styles: Record<string, React.CSSProperties> = {
   spinner: {
     fontSize: '40px',
     color: '#D97706',
+    animation: 'spin 1s linear infinite',
   },
   loadingText: {
     color: '#6B7280',
@@ -136,6 +141,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '12px',
     padding: '20px',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    alignItems: 'center',
   },
   summaryItem: {
     flex: 1,
@@ -152,6 +158,30 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '12px',
     color: '#6B7280',
     marginTop: '4px',
+  },
+  liveIndicator: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: '#ECFDF5',
+    border: '1px solid #059669',
+    borderRadius: '20px',
+    padding: '6px 12px',
+    flexShrink: 0,
+  },
+  liveDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
+  },
+  liveText: {
+    fontSize: '11px',
+    fontWeight: '700',
+    color: '#059669',
+    letterSpacing: '0.5px',
   },
   zonesList: {
     display: 'flex',

@@ -32,7 +32,7 @@ export default function UserManagement() {
     return (
       <div style={styles.loadingContainer}>
         <FaSpinner style={styles.spinner} />
-        <p style={styles.loadingText}>Loading users...</p>
+        <p style={styles.loadingText}>Connecting to real-time data...</p>
       </div>
     );
   }
@@ -52,7 +52,8 @@ export default function UserManagement() {
         </div>
         <div style={styles.userCount}>
           <span style={styles.countBadge}>{enrichedUsers.length} total</span>
-          <span style={{ ...styles.countBadge, background: '#ECFDF5', color: '#059669' }}>
+          <span style={{ ...styles.countBadge, background: '#ECFDF5', color: '#059669', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span style={styles.liveDotSmall} />
             {enrichedUsers.filter((u) => u.isOnline).length} online
           </span>
         </div>
@@ -149,6 +150,7 @@ const styles: Record<string, React.CSSProperties> = {
   spinner: {
     fontSize: '40px',
     color: '#4F46E5',
+    animation: 'spin 1s linear infinite',
   },
   loadingText: {
     color: '#6B7280',
@@ -190,6 +192,14 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: '500',
     background: '#F3F4F6',
     color: '#6B7280',
+  },
+  liveDotSmall: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
   },
   tableCard: {
     background: 'white',
@@ -241,6 +251,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '50%',
     background: '#059669',
     marginLeft: '8px',
+    animation: 'pulse 2s ease-in-out infinite',
   },
   userName: {
     fontWeight: '500',

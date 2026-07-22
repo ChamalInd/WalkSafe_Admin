@@ -14,7 +14,7 @@ export default function Analytics() {
     return (
       <div style={styles.loadingContainer}>
         <FaSpinner style={styles.spinner} />
-        <p style={styles.loadingText}>Loading analytics...</p>
+        <p style={styles.loadingText}>Connecting to real-time analytics...</p>
       </div>
     );
   }
@@ -29,10 +29,10 @@ export default function Analytics() {
   const totalDangerReports = zones.reduce((sum, z) => sum + z.reports, 0);
 
   const metrics = [
-    { label: 'Total Users', value: users.length.toString(), sub: `${liveUsers.length} online` },
-    { label: 'Total Journeys', value: requests.length.toString(), sub: `${completedJourneys} completed` },
-    { label: 'Avg Feedback Rating', value: `${avgRating} ★`, sub: `${feedback.length} reviews` },
-    { label: 'Active Danger Zones', value: zones.length.toString(), sub: `${highDangerZones} high risk` },
+    { label: 'Total Users', value: users.length.toString(), sub: `${liveUsers.length} online`, live: true },
+    { label: 'Total Journeys', value: requests.length.toString(), sub: `${completedJourneys} completed`, live: true },
+    { label: 'Avg Feedback Rating', value: `${avgRating} ★`, sub: `${feedback.length} reviews`, live: false },
+    { label: 'Active Danger Zones', value: zones.length.toString(), sub: `${highDangerZones} high risk`, live: true },
   ];
 
   const statusBreakdown = [
@@ -54,7 +54,10 @@ export default function Analytics() {
       <div style={styles.metricsGrid}>
         {metrics.map((metric, index) => (
           <div key={index} style={styles.metricCard}>
-            <p style={styles.metricLabel}>{metric.label}</p>
+            <div style={styles.metricHeader}>
+              <p style={styles.metricLabel}>{metric.label}</p>
+              {metric.live && <span style={styles.liveDot} />}
+            </div>
             <p style={styles.metricValue}>{metric.value}</p>
             <p style={styles.metricSub}>{metric.sub}</p>
           </div>
@@ -63,7 +66,13 @@ export default function Analytics() {
 
       <div style={styles.chartsGrid}>
         <div style={styles.chartCard}>
-          <h3 style={styles.cardTitle}>Journey Status Distribution</h3>
+          <div style={styles.cardTitleRow}>
+            <h3 style={styles.cardTitle}>Journey Status Distribution</h3>
+            <span style={styles.liveTag}>
+              <span style={styles.liveDotSmall} />
+              LIVE
+            </span>
+          </div>
           <div style={styles.barChart}>
             {statusBreakdown.map((item, index) => (
               <div key={index} style={styles.barGroup}>
@@ -82,7 +91,13 @@ export default function Analytics() {
         </div>
 
         <div style={styles.chartCard}>
-          <h3 style={styles.cardTitle}>Danger Zone Reports</h3>
+          <div style={styles.cardTitleRow}>
+            <h3 style={styles.cardTitle}>Danger Zone Reports</h3>
+            <span style={styles.liveTag}>
+              <span style={styles.liveDotSmall} />
+              LIVE
+            </span>
+          </div>
           <div style={styles.dangerStats}>
             <div style={styles.dangerBigNumber}>
               <span style={styles.dangerNumber}>{totalDangerReports}</span>
@@ -102,7 +117,13 @@ export default function Analytics() {
       </div>
 
       <div style={styles.feedbackSection}>
-        <h3 style={styles.cardTitle}>Recent Feedback</h3>
+        <div style={styles.cardTitleRow}>
+          <h3 style={styles.cardTitle}>Recent Feedback</h3>
+          <span style={styles.liveTag}>
+            <span style={styles.liveDotSmall} />
+            LIVE
+          </span>
+        </div>
         <div style={styles.feedbackList}>
           {feedback.length === 0 ? (
             <p style={styles.emptyText}>No feedback submitted yet</p>
@@ -144,6 +165,7 @@ const styles: Record<string, React.CSSProperties> = {
   spinner: {
     fontSize: '40px',
     color: '#4F46E5',
+    animation: 'spin 1s linear infinite',
   },
   loadingText: {
     color: '#6B7280',
@@ -161,10 +183,24 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '24px',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
   },
+  metricHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
+  },
   metricLabel: {
     fontSize: '13px',
     color: '#6B7280',
-    margin: '0 0 8px',
+    margin: 0,
+  },
+  liveDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
   },
   metricValue: {
     fontSize: '28px',
@@ -189,11 +225,38 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '24px',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
   },
+  cardTitleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '24px',
+  },
   cardTitle: {
     fontSize: '16px',
     fontWeight: '600',
     color: '#1F2937',
-    margin: '0 0 24px',
+    margin: 0,
+  },
+  liveTag: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    background: '#ECFDF5',
+    border: '1px solid #059669',
+    borderRadius: '12px',
+    padding: '3px 8px',
+    fontSize: '10px',
+    fontWeight: '700',
+    color: '#059669',
+    letterSpacing: '0.5px',
+  },
+  liveDotSmall: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
   },
   barChart: {
     display: 'flex',
@@ -220,6 +283,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     borderRadius: '4px 4px 0 0',
     minHeight: '4px',
+    transition: 'height 0.3s ease',
   },
   barValue: {
     fontSize: '14px',

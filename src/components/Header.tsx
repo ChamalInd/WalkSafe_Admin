@@ -1,13 +1,22 @@
-import { FaBell, FaSearch } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
+import { useLiveUsers } from '../hooks/useFirestore';
 
 interface HeaderProps {
   title: string;
 }
 
 export default function Header({ title }: HeaderProps) {
+  const { liveUsers } = useLiveUsers();
+
   return (
     <div style={styles.header}>
-      <h1 style={styles.title}>{title}</h1>
+      <div style={styles.titleRow}>
+        <h1 style={styles.title}>{title}</h1>
+        <div style={styles.liveBadge}>
+          <span style={styles.liveDot} />
+          <span style={styles.liveText}>LIVE</span>
+        </div>
+      </div>
       <div style={styles.actions}>
         <div style={styles.searchBox}>
           <FaSearch style={styles.searchIcon} />
@@ -17,10 +26,10 @@ export default function Header({ title }: HeaderProps) {
             style={styles.searchInput}
           />
         </div>
-        <button style={styles.notificationButton}>
-          <FaBell size={18} />
-          <span style={styles.badge}>3</span>
-        </button>
+        <div style={styles.onlineIndicator}>
+          <span style={styles.onlineDot} />
+          <span style={styles.onlineText}>{liveUsers.length} online</span>
+        </div>
         <div style={styles.avatar}>
           <span style={styles.avatarText}>A</span>
         </div>
@@ -38,11 +47,39 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'white',
     borderBottom: '1px solid #E5E7EB',
   },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
   title: {
     fontSize: '24px',
     fontWeight: '700',
     color: '#1F2937',
     margin: 0,
+  },
+  liveBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: '#ECFDF5',
+    border: '1px solid #059669',
+    borderRadius: '20px',
+    padding: '4px 10px',
+  },
+  liveDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 1.5s ease-in-out infinite',
+  },
+  liveText: {
+    fontSize: '11px',
+    fontWeight: '700',
+    color: '#059669',
+    letterSpacing: '0.5px',
   },
   actions: {
     display: 'flex',
@@ -69,25 +106,26 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#374151',
     width: '200px',
   },
-  notificationButton: {
-    position: 'relative',
-    padding: '8px',
-    background: '#F3F4F6',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    color: '#6B7280',
+  onlineIndicator: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 12px',
+    background: '#ECFDF5',
+    borderRadius: '20px',
   },
-  badge: {
-    position: 'absolute',
-    top: '-2px',
-    right: '-2px',
-    background: '#DC2626',
-    color: 'white',
-    fontSize: '10px',
-    fontWeight: '600',
-    padding: '2px 6px',
-    borderRadius: '10px',
+  onlineDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#059669',
+    display: 'inline-block',
+    animation: 'pulse 2s ease-in-out infinite',
+  },
+  onlineText: {
+    fontSize: '12px',
+    fontWeight: '500',
+    color: '#059669',
   },
   avatar: {
     width: '36px',
